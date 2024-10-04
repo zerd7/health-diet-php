@@ -1,0 +1,47 @@
+{% extends 'main.twig' %}
+{% block content %}
+<div class="container mt-5">
+  <h2 class="text-center">Health Diet Plan</h2>
+  <div class="row">
+    <div class="col-md-8 offset-md-2">
+      <article>
+        <header class="mb-4">
+          <h1 id="plan-title" class="fw-bold">{{ article.title }}</h1>
+        </header>
+        <section>
+          <p id="plan-body">{{ article.body }}</p>
+        </section>
+      </article>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const apiHost = '{{ api_host }}';
+    const planId = '{{ planId }}';
+    const token = localStorage.getItem('access_token');
+
+    fetch(`${apiHost}/api/plans/${planId}/`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      }
+    })
+      .then(response => response.json())
+      .then(data => {
+        document.querySelector('#plan-title').textContent = data.title;
+        const planBodyElement = document.querySelector('#plan-body');
+        planBodyElement.innerHTML = '';
+
+        data.body.split('\n').forEach(paragraph => {
+          const p = document.createElement('p');
+          p.textContent = paragraph;
+          planBodyElement.appendChild(p);
+        });
+      })
+      .catch(error => console.error('Error fetching plan:', error));
+  });
+</script>
+{% endblock content %}

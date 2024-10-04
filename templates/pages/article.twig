@@ -1,0 +1,47 @@
+{% extends 'main.twig' %}
+{% block content %}
+<div class="container mt-5">
+  <h2 class="text-center">Health Diet Article</h2>
+  <div class="row">
+    <div class="col-md-8 offset-md-2">
+      <article>
+        <header class="mb-4">
+          <h1 id="article-title" class="fw-bold">{{ article.title }}</h1>
+        </header>
+        <section>
+          <p id="article-body">{{ article.body }}</p>
+        </section>
+      </article>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const apiHost = '{{ api_host }}';
+    const articleId = '{{ articleId }}';
+    const token = localStorage.getItem('access_token');
+
+    fetch(`${apiHost}/api/articles/${articleId}/`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      document.querySelector('#article-title').textContent = data.title;
+      const articleBodyElement = document.querySelector('#article-body');
+      articleBodyElement.innerHTML = '';
+
+      data.body.split('\n').forEach(paragraph => {
+      const p = document.createElement('p');
+      p.textContent = paragraph;
+      articleBodyElement.appendChild(p);
+      });
+    })
+    .catch(error => console.error('Error fetching article:', error));
+  });
+</script>
+{% endblock content %}
